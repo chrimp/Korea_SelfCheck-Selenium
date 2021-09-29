@@ -4,10 +4,16 @@ from selenium.webdriver.support.ui import Select
 import time
 import sys
 
-#Remove "[" and "]" when replace the text
+#Remove "[" and "]" when replacing the text
 
 #notification_url = 'https://tenta.me/[API_ID]' #decomment here and type your API ID to get Tenta notification
 password = list('placeholder)') #replace placeholder with your 4-digit password
+CiPv = "[City/Province]" #type the name of your city/province (Use Korean supported editor)
+inst_name = "[NAME]" #type the EXACT name of your institution
+your_name = "[NAME]" #your name... literally. Write in the order of Last name + First name (e.g. 김서울)
+your_birthday = '[yymmdd]' #Your birthday. The sequence is YearyearMonthmonthDayday without space.
+#inst_type = '[1/2/3]' # 1 = Kindergarden, Primary/Middle/High school | 2 = University/College | 3 = Other
+school_type = '[1/2/3/4/5]' # 1 = Kindergarden, 2 = Elementary, 3 = Middle, 4 = High, 5 = Other
 
 def main(err):
 
@@ -19,20 +25,26 @@ def main(err):
 
         driver.get('https://hcs.eduro.go.kr/')
 
+        #First Page
+        #driver.find_element_by_class_name('loginHome_typeCheck', 'type'+inst_type).click()
         driver.find_element_by_id("btnConfirm2").click()
+
+        #Login(School/Personnel Find page)
         driver.find_element_by_class_name("searchBtn").click()
         sch = Select(driver.find_element_by_id("sidolabel"))
-        sch.select_by_value("10")
+        sch.select_by_visible_text(CiPv)
         schtype = Select(driver.find_element_by_id("crseScCode"))
-        schtype.select_by_visible_text("[City/Province]") #type the name of your city/province (Use Korean Supported editor)
-        driver.find_element_by_id("orgname").send_keys('[SCHOOL_NAME]') #type the EXACT name of your institution
+        schtype.select_by_value(school_type)
+        driver.find_element_by_id("orgname").send_keys(inst_name)
         driver.find_element_by_css_selector('#softBoardListLayer > div.layerContentsWrap > div.layerSchoolSelectWrap > table > tbody > tr:nth-child(3) > td:nth-child(3) > button').click()
         driver.find_element_by_xpath('//*[@id="softBoardListLayer"]/div[2]/div[1]/ul/li/a').click()
         driver.find_element_by_xpath('//*[@id="softBoardListLayer"]/div[2]/div[2]/input').click()
-        driver.find_element_by_id("user_name_input").send_keys('[YOUR_NAME]')
-        driver.find_element_by_id("birthday_input").send_keys('030323')
+        driver.find_element_by_id("user_name_input").send_keys(your_name)
+        driver.find_element_by_id("birthday_input").send_keys(your_birthday)
         time.sleep(1)
         driver.find_element_by_xpath('//*[@id="btnConfirm"]').click()
+
+        #Login(Password)
         time.sleep(3)
         driver.find_element_by_xpath('//*[@id="password"]').click()
         time.sleep(1)
@@ -100,10 +112,13 @@ def main(err):
     
         time.sleep(3)
         driver.find_element_by_class_name('name').click()
+
+        #Survey Page
         driver.find_element_by_id('survey_q1a1').click()
         driver.find_element_by_id('survey_q2a1').click()
         driver.find_element_by_id('survey_q3a1').click()
         driver.find_element_by_id('btnConfirm').click()
+
         time.sleep(3)
         driver.quit()
     except Exception as Error:

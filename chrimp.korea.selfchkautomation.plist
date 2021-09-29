@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>madebyme.shpz.selfchkauto</string>
+    <string>chrimp.korea.selfchkautomation</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/python3</string>
-        <string>/Users/gimtaeu/selfcheckautomation.py</string>
+        <string>[PAHT_TO_PYTHON]</string>
+        <string>[PAHT_TO_.py_FILE]</string>
     </array>
     <key>StartCalendarInterval</key>
     <array>
