@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import Select
 #import selenium.common.exceptions as selex
 import time
 import sys
+import requests
 
 #Remove "[" and "]" when replacing the text
 
