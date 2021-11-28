@@ -1,9 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-#import selenium.common.exceptions as selex
+import requests
+import selenium.common.exceptions as selex
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 import sys
-import requests
+
 
 #Remove "[" and "]" when replacing the text
 
@@ -15,6 +18,12 @@ your_name = "[NAME]" #your name... literally. Write in the order of Last name + 
 your_birthday = '[yymmdd]' #Your birthday. The sequence is YearyearMonthmonthDayday without space.
 #inst_type = '[1/2/3]' # 1 = Kindergarden, Primary/Middle/High school | 2 = University/College | 3 = Other
 school_type = '[1/2/3/4/5]' # 1 = Kindergarden, 2 = Elementary, 3 = Middle, 4 = High, 5 = Other
+
+class survey_not_complete(Exception): #Raise exception when alert box appears before survey is done
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return self.message
 
 def main(err):
 
@@ -118,7 +127,22 @@ def main(err):
         driver.find_element_by_id('survey_q1a1').click()
         driver.find_element_by_id('survey_q2a1').click()
         driver.find_element_by_id('survey_q3a1').click()
+        driver.find_element_by_id('survey_q4a1').click()
         driver.find_element_by_id('btnConfirm').click()
+
+        try: #Added exception handling when survey is not complete
+            WebDriverWait(driver, 1).until(EC.alert_is_present())
+            alert = driver.switch_to.alert
+            raise survey_not_complete(alert.text)
+        except selex.TimeoutException:
+            pass
+
+        time.sleep(1)
+
+        if "Check is Completed" in driver.page_source:
+            pass
+        else:
+            raise survey_not_complete
 
         time.sleep(3)
         driver.quit()
@@ -132,7 +156,15 @@ def main(err):
             #requests.post(notification_url, data= data_dict) #decomment here to get Tenta notification
             sys.exit(0)
         else:
-            driver.quit()
+            try:
+                driver.quit()
+            except UnboundLocalError: #Handles when the webdriver failed to load properly
+                data_dict = {
+                    "title": '자가진단 실패',
+                    "description": Error
+                }
+                #requests.post(notification_url, data= data_dict)
+                sys.exit(0)
             main(errcount)
 
 main(0)
